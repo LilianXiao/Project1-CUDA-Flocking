@@ -22,21 +22,28 @@ The other two implementations are much better optimized, using a **uniform grid*
 
 ### Performance Analysis
 
-# Framerate
+# Framerate among different
 
 <img width="605" height="371" alt="50kboids" src="https://github.com/user-attachments/assets/586df525-d1d2-45c7-8082-1fd0400ff4db" />
+
+<img width="603" height="370" alt="50kboidsvis" src="https://github.com/user-attachments/assets/a3b16f26-735d-4338-ba2f-ebfc1926a5d5" />
 
 <img width="605" height="371" alt="100kboids" src="https://github.com/user-attachments/assets/bffc856b-7b12-463f-b5ef-a4421c45877d" />
 
 With 50k boids, framerates were on average: 85.8, 440.3, and 1634.7 FPS for each simulation method respectively.
+
+With 50k boids and visualization on, framerates were on average: 56.9,	405.9,	and 767.7 FPS for each simulation method respectively.
 
 With 100k boids, framerates were on average: 18.85 216.0, and 1209.5 FPS for each simulation method respectively.
 
 - Framerate efficiency is best with the coherent grid, followed by the scattered grid, followed by the naive implementation.
 - All framerates on average dropped due to the increase from 50k boids to 100k boids.
 - For a very large number of boids, efficiency is clearly the best with grid-optimized methods.
-- For a considerably small number of boids (~1000), all three methods had roughly the same framerate changes (ranging from ~800 FPS to ~1100 FPS).  The difference in optimization is negligible when it comes to a small-enough number of objects, and thus there is no discernable difference between grid and brute-force methods.
+- For a considerably small number of boids (~1000), all three methods had roughly the same framerate changes (ranging from ~800 to ~1100).  The difference in optimization is negligible when it comes to a small-enough number of objects, and thus there is no discernable difference between grid and brute-force methods.
+- Comparing the 50k boid simulations with and without visualization, framerates across all three were consistently worse on average when visualization was on.
 
-
-
+There is an undeniable improvement when using the coherent uniform grid over the scattered uniform grid and naive methods.
+- There is O(n) work per-boid naively, due to checking every other boid.  However, there is O(b) work done in both uniform grid implementations, where b is some number of boids in the neighborhood block, and we assume non-worst case that b < n.
+- Overall, the naive implementation ends up doing O(n^2) work.  However, for the uniform grid implementations, this can be reduced to roughly O(n).
+- Specifically, the scattered uniform grid has slightly worse memory access than the coherent uniform grid due to the usage of the indirect particleArrayIndices.  This is mediated in the coherent version by directly using the position data and making both position and velocity data contiguous in memory, so they are more easily accessed.
 
