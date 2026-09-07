@@ -26,9 +26,9 @@ The other two implementations are much better optimized, using a **uniform grid*
 
 Uniform grids result in significantly more optimized flocking by reducing the work done in checking boids (performing constant neighboring boid searches) per frame.  There is also more efficient memory access within uniform grid implementations, as the coherent grid implementation eliminates memory indirection from the scattered method.
 
-### Performance Analysis
+# Performance Analysis
 
-# Framerate among different simulation methods
+## Framerate among different simulation methods
 
 <img width="605" height="371" alt="50kboids" src="https://github.com/user-attachments/assets/586df525-d1d2-45c7-8082-1fd0400ff4db" />
 
@@ -53,7 +53,7 @@ There is an undeniable improvement when using the coherent uniform grid over the
 - Overall, the naive implementation ends up doing O(n^2) work.  However, for the uniform grid implementations, this can be reduced to roughly O(n).
 - Specifically, the scattered uniform grid has slightly worse memory access than the coherent uniform grid due to the usage of the indirect particleArrayIndices.  This is mediated in the coherent version by directly using the position data and making both position and velocity data contiguous in memory, so they are more easily accessed.
 
-# Framerate change: variable block size
+## Framerate change: variable block size
 
 <img width="603" height="370" alt="framerate_blocksize" src="https://github.com/user-attachments/assets/2d002ffb-b679-4845-8b4f-06abb5df3727" />
 
@@ -61,7 +61,7 @@ Actually, framerate isn't consistently affected by block size variability.  That
 
 It is worth noting that the maximum block size tested (1024) is consistently slower than the others.  This is interesting, and can possibly be explained by the GPU limiting the blocks that can reside on an SM concurrently.
 
-# Framerate change: cell width/27 cell vs. 8 cell
+## Framerate change: cell width/27 cell vs. 8 cell
 
 <img width="605" height="371" alt="27v8" src="https://github.com/user-attachments/assets/f2b1ebad-b55b-4ea1-9288-d8f64206c9b0" />
 
