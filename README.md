@@ -6,13 +6,15 @@ Project 1 - Flocking**
 * Tested on: Windows 11, Intel(R) Core(TM) Ultra 9 185H (2.50 GHz), 16.0 GB RAM, NVIDIA GeForce RTX 4070 Laptop GPU (8 GB)
 Intel(R) Arc(TM) Graphics (128 MB) (Personal Laptop)
 
-### Boids Flocking CUDA Simulation
+### Boids CUDA Flocking Simulation
 
 https://github.com/user-attachments/assets/a46abf71-ce76-4cfe-a586-34a9581f93f4
 
 https://github.com/user-attachments/assets/e6e40d27-43d3-4630-9217-8fe330653b46
 
-This simulation involves three different approaches: **Naive**, **Scattered**, and **Coherent**.  The first implementation involves naively checking each boid against every other boid, following the three rules of flocking (cohesion, separation, and alignment).
+**What is a boid, you ask?**  A boid is a particle that is extremely useful for showing and simulating a lot of herd and flock behaviors, commonly observed in birds.  One can simulate a lot of different behaviors simply by assigning rules that each boid follows!  Importantly, simulating boids does not involve trying to predetermine the explicit pathing of each and every boid.  These rules are enough to simulate natural flocking behavior that evolves over time.
+
+This simulation involves three different approaches for boid flocking simulation: **Naive**, **Scattered Uniform Grid**, and **Coherent Uniform Grid**.  The first implementation involves naively checking each boid against every other boid, following the three rules of flocking listed below.
 
 - **Cohesion**: A boid moves to the average position of neighboring boids.
 - **Separation**: A boid will not collide with neighboring boids within the separation distance.
@@ -20,7 +22,7 @@ This simulation involves three different approaches: **Naive**, **Scattered**, a
 
 The other two implementations are much better optimized, using a **uniform grid** that only permits boids in some neighborhood distance to affect each other.  While the second implementation only preserves boid cell memory contiguousness, the third implementation ensures that velocities and positions of boids per cell are contiguous.
 
-<img width="575" height="577" alt="Boids Ugrid base" src="https://github.com/user-attachments/assets/962951b9-2076-4731-8385-93dfe61f2786" />
+<img width="574" height="561" alt="Boids Ugrid neighbor search shown" src="https://github.com/user-attachments/assets/a253417e-7f2c-4b9b-80e8-62c7816c1a2e" />
 
 Uniform grids result in significantly more optimized flocking by reducing the work done in checking boids (performing constant neighboring boid searches) per frame.  There is also more efficient memory access within uniform grid implementations, as the coherent grid implementation eliminates memory indirection from the scattered method.
 
