@@ -20,6 +20,10 @@ This simulation involves three different approaches: **Naive**, **Scattered**, a
 
 The other two implementations are much better optimized, using a **uniform grid** that only permits boids in some neighborhood distance to affect each other.  While the second implementation only preserves boid cell memory contiguousness, the third implementation ensures that velocities and positions of boids per cell are contiguous.
 
+<img width="575" height="577" alt="Boids Ugrid base" src="https://github.com/user-attachments/assets/962951b9-2076-4731-8385-93dfe61f2786" />
+
+Uniform grids result in significantly more optimized flocking by reducing the work done in checking boids (performing constant neighboring boid searches) per frame.  There is also more efficient memory access within uniform grid implementations, as the coherent grid implementation eliminates memory indirection from the scattered method.
+
 ### Performance Analysis
 
 # Framerate among different simulation methods
