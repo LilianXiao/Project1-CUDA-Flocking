@@ -61,6 +61,10 @@ void checkCUDAError(const char *msg, int line = -1) {
 
 #define maxSpeed 1.0f
 
+// for testing between 27 cells and 8 cells
+// 0: 27 cells.  1: 8 cells
+#define useEightCells 1
+
 /*! Size of the starting area in simulation space. */
 #define scene_scale 100.0f
 
@@ -619,6 +623,76 @@ __global__ void kernUpdateVelNeighborSearchCoherent(
     int cellY = (int)floorf(cellPos.y);
     int cellZ = (int)floorf(cellPos.z);
 
+#if useEightCells
+    // need to find position within curr cell
+    glm::vec3 f = cellPos - glm::vec3((float)cellX, (float)cellY, (float)cellZ);
+    int xDir = (f.x < 0.5f) ? -1 : 1;
+    int yDir = (f.y < 0.5f) ? -1 : 1;
+    int zDir = (f.z < 0.5f) ? -1 : 1;
+
+    // The main diff between 27 cell and 8 cell is that the 27 cell
+    // must check everything symmetric around the current cell.
+    // with 8 cells, we are computing per boid.
+    for (int q = 0; q < 2; ++q) {
+        int x = cellX + (q == 0 ? 0 : xDir);
+        if (x < 0 || x >= gridResolution) {
+            continue;
+        }
+
+        for (int r = 0; r < 2; ++r) {
+            int y = cellY + (r == 0 ? 0 : yDir);
+            if (y < 0 || y >= gridResolution) {
+                continue;
+            }
+
+            for (int s = 0; s < 2; ++s) {
+                int z = cellZ + (s == 0 ? 0 : zDir);
+                if (z < 0 || z >= gridResolution) {
+                    continue;
+                }
+
+                // within a cell, go from start -> end indices
+                int cell = gridIndex3Dto1D(x, y, z, gridResolution);
+                int start = gridCellStartIndices[cell];
+
+                // check if cell is empty
+                if (start == -1) {
+                    continue;
+                }
+                int end = gridCellEndIndices[cell];
+
+                // Compute cell boid velocity as usual
+                for (int b = start; b <= end; ++b) {
+                    if (b == index) {
+                        continue;
+                    }
+
+                    glm::vec3 bPos = pos[b];
+                    float dist = glm::length(thisPos - bPos);
+
+                    // Rule 1
+                    if (dist < rule1Distance) {
+                        pc += bPos;
+                        numNeighborsR1++;
+                    }
+
+                    // Rule 2
+                    if (dist < rule2Distance) {
+                        c -= (bPos - thisPos);
+                    }
+
+                    // Rule 3
+                    if (dist < rule3Distance) {
+                        pv += vel1[b];
+                        numNeighborsR3++;
+                    }
+                }
+            }
+        }
+    }
+
+#else
+
     // find cells with neighbors (not always 8)
     for (int dz = -1; dz <= 1; ++dz) {
         int z = cellZ + dz;
@@ -677,6 +751,7 @@ __global__ void kernUpdateVelNeighborSearchCoherent(
             }
         }
     }
+#endif
 
     // Compute updated velocity change
 
